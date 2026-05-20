@@ -13,4 +13,7 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
-      - run: npx partykit deploy --token ${{ secrets.PARTYKIT_TOKEN }}
+      - run: |
+          mkdir -p ~/.partykit
+          echo '{"access_token":"${{ secrets.PARTYKIT_TOKEN }}","login":"kalakaritzu","type":"clerk","username":"kalakaritzu","team":"kalakaritzu"}' > ~/.partykit/config.json
+          npx partykit deploy
