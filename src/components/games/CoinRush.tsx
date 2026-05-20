@@ -115,15 +115,19 @@ export default function CoinRush({ config, onComplete, myId, players, onSend }: 
           {Object.entries(others).map(([id, op]) => {
             const p = players.find(pl => pl.id === id)
             return (
-              <div key={id} className="absolute flex items-center justify-center text-xl pointer-events-none transition-all duration-100"
+              <div key={id} className="absolute flex items-center justify-center pointer-events-none transition-all duration-100"
                 style={{ left: op.x * CELL, top: op.y * CELL, width: CELL, height: CELL }}>
-                {p?.emoji ?? '👤'}
+                {p?.avatar
+                  ? <img src={p.avatar} className="w-8 h-8 rounded-full object-cover" alt="" />
+                  : <span className="text-xl">{p?.emoji ?? '👤'}</span>}
               </div>
             )
           })}
-          <div className="absolute flex items-center justify-center text-2xl pointer-events-none"
+          <div className="absolute flex items-center justify-center pointer-events-none"
             style={{ left: pos.x * CELL, top: pos.y * CELL, width: CELL, height: CELL }}>
-            {myPlayer?.emoji ?? '⭐'}
+            {myPlayer?.avatar
+              ? <img src={myPlayer.avatar} className="w-8 h-8 rounded-full object-cover ring-2 ring-yellow-400" alt="" />
+              : <span className="text-2xl">{myPlayer?.emoji ?? '⭐'}</span>}
           </div>
         </div>
 

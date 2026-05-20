@@ -56,8 +56,11 @@ export default function HotPotato({ myId, players, onSend }: Props) {
         {exploding && loserPlayer && (
           <div className="slide-up">
             <div className="text-8xl mb-4">💥</div>
-            <p className="text-3xl font-black text-red-400">
-              {loserPlayer.emoji} {loserPlayer.name} exploded!
+            <p className="text-3xl font-black text-red-400 flex items-center justify-center gap-2">
+              {loserPlayer.avatar
+                ? <img src={loserPlayer.avatar} className="w-9 h-9 rounded-full object-cover inline-block" alt="" />
+                : <span>{loserPlayer.emoji}</span>}
+              {loserPlayer.name} exploded!
             </p>
             <p className="text-white/50 mt-2">Next round starting…</p>
           </div>
@@ -82,8 +85,11 @@ export default function HotPotato({ myId, players, onSend }: Props) {
                 <div className="text-8xl mb-4">😌</div>
                 <p className="text-2xl font-bold text-green-400">You're safe!</p>
                 {holderPlayer && (
-                  <p className="text-white/50 mt-2">
-                    {holderPlayer.emoji} <span className="font-bold">{holderPlayer.name}</span> has the potato
+                  <p className="text-white/50 mt-2 flex items-center justify-center gap-2">
+                    {holderPlayer.avatar
+                      ? <img src={holderPlayer.avatar} className="w-6 h-6 rounded-full object-cover inline-block" alt="" />
+                      : <span>{holderPlayer.emoji}</span>}
+                    <span className="font-bold">{holderPlayer.name}</span> has the potato
                   </p>
                 )}
               </>
