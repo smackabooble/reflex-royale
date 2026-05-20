@@ -1,0 +1,5 @@
+{
+  "name": "reflex-royale",
+  "main": "party/index.ts",
+  "compatibilityDate": "2024-11-18"
+}
