@@ -90,14 +90,22 @@ export default function App() {
   useEffect(() => () => { socketRef.current?.close() }, [])
 
   useEffect(() => {
-    const prevent = (e: KeyboardEvent) => {
+    const preventKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
         e.preventDefault()
       }
     }
-    window.addEventListener('keydown', prevent, { passive: false })
-    return () => window.removeEventListener('keydown', prevent)
+    const preventTouch = (e: TouchEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', preventKey, { passive: false })
+    document.addEventListener('touchmove', preventTouch, { passive: false })
+    return () => {
+      window.removeEventListener('keydown', preventKey)
+      document.removeEventListener('touchmove', preventTouch)
+    }
   }, [])
 
   if (screen === 'lobby') {
