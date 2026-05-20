@@ -104,7 +104,7 @@ function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomSt
   const sorted = [...players].sort((a,b) => b.score - a.score)
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10 px-4 py-2">
-      <div className="max-w-2xl mx-auto flex items-center gap-3 overflow-x-auto">
+      <div className="flex items-center gap-3 overflow-x-auto">
         <span className="text-white/40 text-xs shrink-0">{roundNumber}/{totalRounds}</span>
         {sorted.map(p => (
           <div key={p.id} className={`flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-lg ${p.id === myId ? 'bg-yellow-400/20' : ''}`}>
