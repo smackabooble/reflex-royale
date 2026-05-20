@@ -76,6 +76,9 @@ export default function App() {
           setState(prev => ({ ...prev, players: msg.players }))
           window.dispatchEvent(new CustomEvent('hp', { detail: msg }))
           break
+        case 'player-move':
+          window.dispatchEvent(new CustomEvent('move', { detail: msg }))
+          break
       }
     })
 

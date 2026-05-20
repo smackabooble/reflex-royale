@@ -14,6 +14,16 @@ export type GameType =
   | 'dodge'
   | 'balloon-pop'
   | 'sheep-counter'
+  | 'coin-rush'
+  | 'word-scramble'
+  | 'falling-catch'
+  | 'speed-trivia'
+  | 'color-tap'
+  | 'tile-flip'
+  | 'rapid-tap'
+  | 'emoji-decode'
+  | 'math-chain'
+  | 'pattern-copy'
 
 export interface Player {
   id: string
@@ -53,6 +63,16 @@ export const GAME_NAMES: Record<GameType, string> = {
   'dodge': '💨 Dodge!',
   'balloon-pop': '🎈 Balloon Pop',
   'sheep-counter': '🐑 Sheep Counter',
+  'coin-rush': '🪙 Coin Rush',
+  'word-scramble': '🔀 Word Scramble',
+  'falling-catch': '⭐ Falling Catch',
+  'speed-trivia': '🧩 Speed Trivia',
+  'color-tap': '🎨 Color Tap',
+  'tile-flip': '🃏 Tile Flip',
+  'rapid-tap': '👆 Rapid Tap',
+  'emoji-decode': '🤔 Emoji Decode',
+  'math-chain': '🔗 Math Chain',
+  'pattern-copy': '📋 Pattern Copy',
 }
 
 export const GAME_DESCRIPTIONS: Record<GameType, string> = {
@@ -71,6 +91,16 @@ export const GAME_DESCRIPTIONS: Record<GameType, string> = {
   'dodge': 'Dodge the incoming circles with your cursor!',
   'balloon-pop': 'Pop as many balloons as you can!',
   'sheep-counter': 'Count only the sheep in the herd!',
+  'coin-rush': 'Walk around, collect coins, see other players!',
+  'word-scramble': 'Unscramble the word as fast as you can!',
+  'falling-catch': 'Catch stars, dodge bombs falling from the sky!',
+  'speed-trivia': 'Answer trivia questions as fast as possible!',
+  'color-tap': 'Tap only the circles matching the target color!',
+  'tile-flip': 'Flip tiles to find matching pairs!',
+  'rapid-tap': 'Tap the button as many times as you can!',
+  'emoji-decode': 'What word do these emojis represent?',
+  'math-chain': 'Solve chained math problems rapidly!',
+  'pattern-copy': 'Memorize and recreate the dot pattern!',
 }
 
 // Server → Client
@@ -82,6 +112,7 @@ export type ServerMessage =
   | { type: 'game-end'; players: Player[] }
   | { type: 'hot-potato-update'; holderId: string }
   | { type: 'hot-potato-explode'; loserId: string; players: Player[]; bombsLeft: number }
+  | { type: 'player-move'; playerId: string; x: number; y: number }
   | { type: 'error'; message: string }
 
 // Client → Server

@@ -19,6 +19,16 @@ import FastestTypist from './games/FastestTypist'
 import Dodge from './games/Dodge'
 import BalloonPop from './games/BalloonPop'
 import SheepCounter from './games/SheepCounter'
+import CoinRush from './games/CoinRush'
+import WordScramble from './games/WordScramble'
+import FallingCatch from './games/FallingCatch'
+import SpeedTrivia from './games/SpeedTrivia'
+import ColorTap from './games/ColorTap'
+import TileFlip from './games/TileFlip'
+import RapidTap from './games/RapidTap'
+import EmojiDecode from './games/EmojiDecode'
+import MathChain from './games/MathChain'
+import PatternCopy from './games/PatternCopy'
 
 export interface GameProps {
   config: Record<string, unknown>
@@ -51,6 +61,16 @@ const GAMES: Record<GameType, React.ComponentType<any>> = {
   'dodge': Dodge,
   'balloon-pop': BalloonPop,
   'sheep-counter': SheepCounter,
+  'coin-rush': CoinRush,
+  'word-scramble': WordScramble,
+  'falling-catch': FallingCatch,
+  'speed-trivia': SpeedTrivia,
+  'color-tap': ColorTap,
+  'tile-flip': TileFlip,
+  'rapid-tap': RapidTap,
+  'emoji-decode': EmojiDecode,
+  'math-chain': MathChain,
+  'pattern-copy': PatternCopy,
 }
 
 function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomState['players'], myId: string, roundNumber: number, totalRounds: number }) {

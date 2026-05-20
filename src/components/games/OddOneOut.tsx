@@ -29,6 +29,7 @@ function makeRound() {
 }
 
 const ROUNDS = 5
+const DURATION = 25
 
 export default function OddOneOut({ onComplete }: Props) {
   const [round, setRound] = useState(0)
@@ -37,20 +38,29 @@ export default function OddOneOut({ onComplete }: Props) {
   const [roundStart, setRoundStart] = useState(Date.now())
   const [flash, setFlash] = useState<number | null>(null)
   const [wrong, setWrong] = useState<number | null>(null)
+  const [timeLeft, setTimeLeft] = useState(DURATION)
+  const [finished, setFinished] = useState(false)
   const done = useRef(false)
   const totalRef = useRef(0)
 
   const finish = useCallback((s: number) => {
     if (done.current) return
     done.current = true
-    onComplete(s)
+    setFinished(true)
+    setTimeout(() => onComplete(s), 1200)
   }, [onComplete])
 
+  useEffect(() => {
+    if (timeLeft === 0) { finish(totalRef.current); return }
+    const t = setTimeout(() => setTimeLeft(n => n - 1), 1000)
+    return () => clearTimeout(t)
+  }, [timeLeft, finish])
+
   const click = (i: number) => {
-    if (done.current) return
+    if (done.current || finished) return
     if (i === grid.oddIdx) {
       const elapsed = Date.now() - roundStart
-      const pts = Math.max(0, 1000 - elapsed)
+      const pts = Math.max(100, 1000 - Math.floor(elapsed / 2))
       totalRef.current += pts
       setTotalScore(totalRef.current)
       setFlash(i)
@@ -68,13 +78,29 @@ export default function OddOneOut({ onComplete }: Props) {
     }
   }
 
+  const pct = (timeLeft / DURATION) * 100
+
+  if (finished) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+        <div className="text-7xl mb-4">✅</div>
+        <h2 className="text-4xl font-black text-green-400 mb-2">All Done!</h2>
+        <p className="text-white/60 text-xl">Score: <span className="text-yellow-400 font-bold">{totalScore}</span></p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 select-none">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-between mb-4">
           <div className="text-2xl font-black text-yellow-400">{totalScore}</div>
-          <p className="text-white/40 text-sm">Round {round + 1} / {ROUNDS}</p>
+          <div className="flex-1 mx-4 h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-1000" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="text-white/60 font-bold w-6 text-right">{timeLeft}</div>
         </div>
+        <p className="text-center text-white/40 text-sm mb-3">Round {round + 1} / {ROUNDS}</p>
 
         <div className="grid grid-cols-4 gap-2">
           {grid.cells.map((emoji, i) => (

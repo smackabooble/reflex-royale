@@ -9,7 +9,7 @@ function randomCode() {
 }
 
 export default function Lobby({ onJoin }: Props) {
-  const [name, setName] = useState('')
+  const [name, setName] = useState(() => localStorage.getItem('playerName') ?? '')
   const [joinCode, setJoinCode] = useState('')
   const [tab, setTab] = useState<'create' | 'join'>('create')
   const [error, setError] = useState('')
@@ -35,9 +35,9 @@ export default function Lobby({ onJoin }: Props) {
             <label className="text-xs text-white/50 uppercase tracking-widest mb-2 block">Your name</label>
             <input
               className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-yellow-400 transition font-semibold text-lg"
-              placeholder="e.g. Alex 🔥"
+              placeholder="John Doe"
               value={name}
-              onChange={e => { setName(e.target.value); setError('') }}
+              onChange={e => { setName(e.target.value); setError(''); localStorage.setItem('playerName', e.target.value) }}
               maxLength={20}
               onKeyDown={e => e.key === 'Enter' && tab === 'join' && go(joinCode)}
             />

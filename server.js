@@ -9,7 +9,7 @@ const server = createServer((req, res) => {
 const wss = new WebSocketServer({ server })
 
 const PLAYER_EMOJIS = ['🦊','🐯','🦁','🐼','🐨','🦋','🐙','🦄','🦈','🐢','🦖','🌈','🔥','⚡','🌊','🎸']
-const ALL_GAMES = ['whack-mole','dont-click-red','pure-reaction','simon-says','stroop-effect','odd-one-out','number-rush','memory-grid','hot-potato','math-sprint','the-wire','fastest-typist','dodge','balloon-pop','sheep-counter']
+const ALL_GAMES = ['whack-mole','dont-click-red','pure-reaction','simon-says','stroop-effect','odd-one-out','number-rush','memory-grid','hot-potato','math-sprint','the-wire','fastest-typist','dodge','balloon-pop','sheep-counter','coin-rush','word-scramble','falling-catch','speed-trivia','color-tap','tile-flip','rapid-tap','emoji-decode','math-chain','pattern-copy']
 const POINTS_TABLE = [500,300,150,100,75,50,25,10,10,10]
 const TOTAL_ROUNDS = 10
 const ROUND_TIMEOUT_MS = 35000
@@ -44,11 +44,72 @@ function genStroop(n) {
   })
 }
 
+const WORDS = ['elephant','guitar','mountain','computer','dolphin','rainbow','chocolate','umbrella','asteroid','pyramid','lantern','volcano','tornado','penguin','skeleton','calendar','mystery','diamond','library','jellyfish']
+const TRIVIA = [
+  { q: 'What planet is closest to the Sun?', a: 'Mercury', o: ['Venus','Mars','Jupiter'] },
+  { q: 'How many sides does a hexagon have?', a: '6', o: ['4','5','8'] },
+  { q: 'What is the capital of France?', a: 'Paris', o: ['London','Berlin','Madrid'] },
+  { q: 'What gas do plants absorb?', a: 'CO₂', o: ['Oxygen','Nitrogen','Hydrogen'] },
+  { q: 'How many bones are in the human body?', a: '206', o: ['150','300','100'] },
+  { q: 'What is 7 × 8?', a: '56', o: ['48','54','64'] },
+  { q: 'Which ocean is the largest?', a: 'Pacific', o: ['Atlantic','Indian','Arctic'] },
+  { q: 'What color do you get mixing red + blue?', a: 'Purple', o: ['Green','Orange','Brown'] },
+  { q: 'How many minutes in 2 hours?', a: '120', o: ['60','90','180'] },
+  { q: 'What is the square root of 64?', a: '8', o: ['6','7','9'] },
+  { q: 'Which animal is the fastest on land?', a: 'Cheetah', o: ['Lion','Horse','Falcon'] },
+  { q: 'How many strings on a standard guitar?', a: '6', o: ['4','5','8'] },
+  { q: 'What year did WW2 end?', a: '1945', o: ['1939','1942','1950'] },
+  { q: 'What is H₂O?', a: 'Water', o: ['Salt','Sugar','Acid'] },
+  { q: 'How many continents are there?', a: '7', o: ['5','6','8'] },
+]
+const EMOJI_PUZZLES = [
+  { emojis: '🌊🏄', answer: 'surfing' },
+  { emojis: '🔥💧', answer: 'steam' },
+  { emojis: '🐝🏠', answer: 'beehive' },
+  { emojis: '🌙🌙', answer: 'double moon' },
+  { emojis: '🎸⭐', answer: 'rockstar' },
+  { emojis: '🐟🍕', answer: 'fish pizza' },
+  { emojis: '❤️🔥', answer: 'heartburn' },
+  { emojis: '🌧️💡', answer: 'brainstorm' },
+  { emojis: '🌈🍰', answer: 'rainbow cake' },
+  { emojis: '🦁👑', answer: 'lion king' },
+]
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
+
 function buildConfig(game) {
   if (game === 'math-sprint') return { questions: genMath(8) }
   if (game === 'sheep-counter') return { animals: genSheep(22) }
   if (game === 'stroop-effect') return { questions: genStroop(15) }
   if (game === 'simon-says') return { seed: Math.floor(Math.random() * 99999) }
+  if (game === 'word-scramble') {
+    const words = shuffle(WORDS).slice(0, 6)
+    return { words }
+  }
+  if (game === 'speed-trivia') {
+    const questions = shuffle(TRIVIA).slice(0, 6).map(q => ({
+      q: q.q,
+      options: shuffle([q.a, ...q.o]),
+      answer: q.a,
+    }))
+    return { questions }
+  }
+  if (game === 'emoji-decode') {
+    const puzzles = shuffle(EMOJI_PUZZLES).slice(0, 5)
+    return { puzzles }
+  }
+  if (game === 'math-chain') return { start: rand(2, 15), ops: genMath(8) }
+  if (game === 'pattern-copy') return { seed: Math.floor(Math.random() * 99999) }
+  if (game === 'coin-rush') {
+    const coins = []
+    const used = new Set()
+    while (coins.length < 18) {
+      const x = rand(0, 14); const y = rand(0, 9)
+      const k = `${x},${y}`
+      if (!used.has(k)) { used.add(k); coins.push({ x, y }) }
+    }
+    return { coins }
+  }
   return {}
 }
 
@@ -211,6 +272,9 @@ wss.on('connection', (ws, req) => {
       const game = room.gameOrder[room.currentRound - 1]
       if (game === 'hot-potato') return
       if (!room.submissions.has(connId)) { room.submissions.set(connId, msg.score); checkComplete(room) }
+
+    } else if (msg.type === 'move') {
+      broadcast(room, { type: 'player-move', playerId: connId, x: msg.x, y: msg.y })
 
     } else if (msg.type === 'hot-potato-pass') {
       const hp = room.hotPotato
