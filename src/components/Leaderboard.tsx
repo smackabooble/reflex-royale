@@ -20,8 +20,12 @@ export default function Leaderboard({ players, myId, onPlayAgain }: Props) {
           <div className="text-6xl mb-3">🏆</div>
           <h1 className="text-4xl font-black">Game Over!</h1>
           {winner && (
-            <p className="text-white/60 mt-2">
-              {winner.emoji} <span className="text-yellow-400 font-bold">{winner.name}</span> wins!
+            <p className="text-white/60 mt-2 flex items-center justify-center gap-2">
+              {winner.avatar
+                ? <img src={winner.avatar} className="w-7 h-7 rounded-full object-cover inline-block" alt="" />
+                : <span>{winner.emoji}</span>
+              }
+              <span className="text-yellow-400 font-bold">{winner.name}</span> wins!
             </p>
           )}
         </div>
@@ -35,7 +39,12 @@ export default function Leaderboard({ players, myId, onPlayAgain }: Props) {
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${COLORS[i] ?? 'from-white/20 to-white/10'} flex items-center justify-center text-lg font-black`}>
                 {MEDALS[i] ?? i + 1}
               </div>
-              <span className="text-2xl">{p.emoji}</span>
+              <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-white/10">
+                {p.avatar
+                  ? <img src={p.avatar} className="w-full h-full object-cover" alt="" />
+                  : <span className="text-2xl">{p.emoji}</span>
+                }
+              </div>
               <div className="flex-1">
                 <p className="font-bold">{p.name} {p.id === myId ? <span className="text-white/40 text-xs">(you)</span> : ''}</p>
               </div>

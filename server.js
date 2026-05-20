@@ -169,7 +169,7 @@ function endRound(room) {
   const roundScores = []
   for (let i = 0; i < sorted.length; i++) {
     const [id, raw] = sorted[i]
-    const pts = POINTS_TABLE[Math.min(i, POINTS_TABLE.length - 1)]
+    const pts = raw > 0 ? POINTS_TABLE[Math.min(i, POINTS_TABLE.length - 1)] : 0
     const cur = room.totalScores.get(id) ?? 0
     room.totalScores.set(id, cur + pts)
     const p = room.players.get(id)

@@ -89,6 +89,17 @@ export default function App() {
 
   useEffect(() => () => { socketRef.current?.close() }, [])
 
+  useEffect(() => {
+    const prevent = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+        e.preventDefault()
+      }
+    }
+    window.addEventListener('keydown', prevent, { passive: false })
+    return () => window.removeEventListener('keydown', prevent)
+  }, [])
+
   if (screen === 'lobby') {
     return <Lobby onJoin={handleJoin} />
   }

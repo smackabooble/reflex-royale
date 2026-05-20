@@ -93,6 +93,13 @@ const GAMES: Record<GameType, React.ComponentType<any>> = {
   'reaction-color': ReactionColor,
 }
 
+function PlayerIcon({ p, size = 'sm' }: { p: import('../types').Player, size?: 'sm' | 'md' }) {
+  const cls = size === 'sm' ? 'w-6 h-6 text-sm' : 'w-8 h-8 text-xl'
+  return p.avatar
+    ? <img src={p.avatar} className={`${cls} rounded-full object-cover flex-shrink-0`} alt="" />
+    : <span className={size === 'sm' ? 'text-base' : 'text-xl'}>{p.emoji}</span>
+}
+
 function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomState['players'], myId: string, roundNumber: number, totalRounds: number }) {
   const sorted = [...players].sort((a,b) => b.score - a.score)
   return (
@@ -101,7 +108,7 @@ function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomSt
         <span className="text-white/40 text-xs shrink-0">{roundNumber}/{totalRounds}</span>
         {sorted.map(p => (
           <div key={p.id} className={`flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-lg ${p.id === myId ? 'bg-yellow-400/20' : ''}`}>
-            <span className="text-base">{p.emoji}</span>
+            <PlayerIcon p={p} size="sm" />
             <span className={`font-bold text-sm ${p.id === myId ? 'text-yellow-400' : 'text-white/80'}`}>{p.score}</span>
           </div>
         ))}

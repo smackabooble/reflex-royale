@@ -28,7 +28,12 @@ export default function RoundResults({ roundScores, players, roundNumber, totalR
             return (
               <div key={rs.playerId} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${i === 0 ? 'bg-yellow-400/20 border border-yellow-400/40' : 'bg-white/5'}`}>
                 <span className="text-2xl w-8 text-center">{MEDALS[i] ?? `${i+1}`}</span>
-                <span className="text-xl">{p.emoji}</span>
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-white/10">
+                  {p.avatar
+                    ? <img src={p.avatar} className="w-full h-full object-cover" alt="" />
+                    : <span className="text-xl">{p.emoji}</span>
+                  }
+                </div>
                 <span className="font-bold flex-1">{p.name}</span>
                 <div className="text-right">
                   <div className="text-green-400 font-bold text-sm">+{rs.points} pts</div>
