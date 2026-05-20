@@ -31,6 +31,7 @@ export interface Player {
   score: number
   emoji: string
   isHost: boolean
+  avatar?: string
 }
 
 export type Phase =

@@ -40,7 +40,12 @@ export default function WaitingRoom({ roomId, players, myId, isHost, onStart }: 
           <div className="space-y-2">
             {players.map(p => (
               <div key={p.id} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${p.id === myId ? 'bg-yellow-400/15 border border-yellow-400/30' : 'bg-white/5'}`}>
-                <span className="text-2xl">{p.emoji}</span>
+                <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-white/10">
+                  {p.avatar
+                    ? <img src={p.avatar} className="w-full h-full object-cover" alt="" />
+                    : <span className="text-xl">{p.emoji}</span>
+                  }
+                </div>
                 <span className="font-semibold flex-1">{p.name}</span>
                 {p.isHost && <span className="text-xs bg-yellow-400/20 text-yellow-400 px-2 py-0.5 rounded-full">HOST</span>}
                 {p.id === myId && <span className="text-xs text-white/40">you</span>}

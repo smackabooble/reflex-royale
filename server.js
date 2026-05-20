@@ -252,7 +252,8 @@ wss.on('connection', (ws, req) => {
       const name = (msg.name || 'Player').slice(0, 20).trim()
       const isFirst = room.players.size === 0
       const emoji = PLAYER_EMOJIS[room.players.size % PLAYER_EMOJIS.length]
-      const player = { id: connId, name, score: room.totalScores.get(connId) ?? 0, emoji, isHost: isFirst }
+      const avatar = typeof msg.avatar === 'string' && msg.avatar.startsWith('data:image') ? msg.avatar : ''
+      const player = { id: connId, name, score: room.totalScores.get(connId) ?? 0, emoji, isHost: isFirst, avatar }
       if (isFirst) room.hostId = connId
       room.players.set(connId, player)
       if (!room.totalScores.has(connId)) room.totalScores.set(connId, 0)

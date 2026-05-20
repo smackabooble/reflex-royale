@@ -36,7 +36,7 @@ export default function App() {
     socketRef.current?.send(JSON.stringify(msg))
   }, [])
 
-  const handleJoin = useCallback((room: string, name: string) => {
+  const handleJoin = useCallback((room: string, name: string, avatar: string) => {
     const WS_HOST = import.meta.env.VITE_WS_URL ?? 'ws://localhost:3001'
     const connId = Math.random().toString(36).slice(2)
     const socket = new WebSocket(`${WS_HOST}?room=${room}`)
@@ -47,7 +47,7 @@ export default function App() {
     setScreen('room')
 
     socket.addEventListener('open', () => {
-      socket.send(JSON.stringify({ type: 'join', name }))
+      socket.send(JSON.stringify({ type: 'join', name, avatar }))
     })
 
     socket.addEventListener('message', (ev) => {
