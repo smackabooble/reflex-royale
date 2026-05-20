@@ -1,4 +1,4 @@
-name: Deploy PartyKit Server
+name: Deploy Frontend
 
 on:
   push:
@@ -13,7 +13,12 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
-      - run: |
-          mkdir -p ~/.partykit
-          echo '{"access_token":"${{ secrets.PARTYKIT_TOKEN }}","login":"kalakaritzu","type":"clerk","username":"kalakaritzu","team":"kalakaritzu"}' > ~/.partykit/config.json
-          npx partykit deploy
+      - run: npm run build
+        env:
+          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'

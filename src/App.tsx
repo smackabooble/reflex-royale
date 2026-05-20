@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import PartySocket from 'partysocket'
 import type { Player, Phase, GameType, ServerMessage, RoundScore } from './types'
 import Lobby from './components/Lobby'
 import GameRoom from './components/GameRoom'
@@ -38,13 +37,13 @@ export default function App() {
   }, [])
 
   const handleJoin = useCallback((room: string, name: string) => {
-    const socket = new PartySocket({
-      host: process.env.PARTYKIT_HOST ?? 'localhost:1999',
-      room,
-    })
-    socketRef.current = socket
+    const WS_HOST = import.meta.env.VITE_WS_URL ?? 'ws://localhost:3001'
+    const connId = Math.random().toString(36).slice(2)
+    const socket = new WebSocket(`${WS_HOST}?room=${room}`)
+    ;(socket as any).id = connId
+    socketRef.current = socket as any
     setRoomId(room)
-    setMyId(socket.id)
+    setMyId(connId)
     setScreen('room')
 
     socket.addEventListener('open', () => {
@@ -83,7 +82,7 @@ export default function App() {
     socket.addEventListener('close', () => {
       setState(prev => ({ ...prev, phase: 'waiting' }))
     })
-  }, [])
+  }, []) // eslint-disable-line
 
   useEffect(() => () => { socketRef.current?.close() }, [])
 
