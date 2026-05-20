@@ -75,7 +75,7 @@ export const GAME_DESCRIPTIONS: Record<GameType, string> = {
 
 // Server → Client
 export type ServerMessage =
-  | { type: 'room-state'; players: Player[]; hostId: string; phase: Phase }
+  | { type: 'room-state'; players: Player[]; hostId: string; phase: Phase; yourId?: string }
   | { type: 'round-countdown'; game: GameType; roundNumber: number; totalRounds: number }
   | { type: 'round-start'; game: GameType; roundNumber: number; totalRounds: number; config: Record<string, unknown> }
   | { type: 'round-end'; roundScores: RoundScore[]; players: Player[]; roundNumber: number; totalRounds: number }

@@ -54,7 +54,7 @@ export default function App() {
       const msg: ServerMessage = JSON.parse(ev.data as string)
       switch (msg.type) {
         case 'room-state':
-          setMyId(socket.id)
+          if (msg.yourId) setMyId(msg.yourId)
           setState(prev => ({ ...prev, phase: msg.phase, players: msg.players, hostId: msg.hostId }))
           break
         case 'round-countdown':

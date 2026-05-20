@@ -185,7 +185,7 @@ wss.on('connection', (ws, req) => {
   const room = getRoom(roomId)
   room.sockets.set(connId, ws)
 
-  sendTo(ws, { type: 'room-state', players: [...room.players.values()], hostId: room.hostId, phase: room.phase })
+  sendTo(ws, { type: 'room-state', players: [...room.players.values()], hostId: room.hostId, phase: room.phase, yourId: connId })
 
   ws.on('message', (data) => {
     let msg
