@@ -9,7 +9,7 @@ const server = createServer((req, res) => {
 const wss = new WebSocketServer({ server })
 
 const PLAYER_EMOJIS = ['🦊','🐯','🦁','🐼','🐨','🦋','🐙','🦄','🦈','🐢','🦖','🌈','🔥','⚡','🌊','🎸']
-const ALL_GAMES = ['whack-mole','dont-click-red','pure-reaction','simon-says','stroop-effect','odd-one-out','number-rush','memory-grid','hot-potato','math-sprint','the-wire','fastest-typist','dodge','balloon-pop','sheep-counter','coin-rush','word-scramble','falling-catch','speed-trivia','color-tap','tile-flip','rapid-tap','emoji-decode','math-chain','pattern-copy']
+const ALL_GAMES = ['whack-mole','dont-click-red','pure-reaction','simon-says','stroop-effect','odd-one-out','number-rush','memory-grid','hot-potato','math-sprint','the-wire','fastest-typist','dodge','balloon-pop','sheep-counter','coin-rush','word-scramble','falling-catch','speed-trivia','color-tap','tile-flip','rapid-tap','emoji-decode','math-chain','pattern-copy','snake','target-shoot','rps-duel','password-memory','spin-stop','emoji-sort','color-memory','number-memory','finger-race','reaction-color']
 const POINTS_TABLE = [500,300,150,100,75,50,25,10,10,10]
 const TOTAL_ROUNDS = 10
 const ROUND_TIMEOUT_MS = 35000
@@ -100,6 +100,15 @@ function buildConfig(game) {
   }
   if (game === 'math-chain') return { start: rand(2, 15), ops: genMath(8) }
   if (game === 'pattern-copy') return { seed: Math.floor(Math.random() * 99999) }
+  if (game === 'password-memory') {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
+    const pw = () => Array.from({ length: 7 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+    return { passwords: [pw(), pw(), pw()] }
+  }
+  if (game === 'number-memory') {
+    const seq = (len) => Array.from({ length: len }, () => Math.floor(Math.random() * 9) + 1)
+    return { sequences: [seq(4), seq(5), seq(6), seq(7)] }
+  }
   if (game === 'coin-rush') {
     const coins = []
     const used = new Set()

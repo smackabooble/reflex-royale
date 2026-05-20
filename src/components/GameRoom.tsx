@@ -20,6 +20,16 @@ import Dodge from './games/Dodge'
 import BalloonPop from './games/BalloonPop'
 import SheepCounter from './games/SheepCounter'
 import CoinRush from './games/CoinRush'
+import Snake from './games/Snake'
+import TargetShoot from './games/TargetShoot'
+import RPSDuel from './games/RPSDuel'
+import PasswordMemory from './games/PasswordMemory'
+import SpinStop from './games/SpinStop'
+import EmojiSort from './games/EmojiSort'
+import ColorMemory from './games/ColorMemory'
+import NumberMemory from './games/NumberMemory'
+import FingerRace from './games/FingerRace'
+import ReactionColor from './games/ReactionColor'
 import WordScramble from './games/WordScramble'
 import FallingCatch from './games/FallingCatch'
 import SpeedTrivia from './games/SpeedTrivia'
@@ -71,6 +81,16 @@ const GAMES: Record<GameType, React.ComponentType<any>> = {
   'emoji-decode': EmojiDecode,
   'math-chain': MathChain,
   'pattern-copy': PatternCopy,
+  'snake': Snake,
+  'target-shoot': TargetShoot,
+  'rps-duel': RPSDuel,
+  'password-memory': PasswordMemory,
+  'spin-stop': SpinStop,
+  'emoji-sort': EmojiSort,
+  'color-memory': ColorMemory,
+  'number-memory': NumberMemory,
+  'finger-race': FingerRace,
+  'reaction-color': ReactionColor,
 }
 
 function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomState['players'], myId: string, roundNumber: number, totalRounds: number }) {

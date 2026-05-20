@@ -24,6 +24,16 @@ export type GameType =
   | 'emoji-decode'
   | 'math-chain'
   | 'pattern-copy'
+  | 'snake'
+  | 'target-shoot'
+  | 'rps-duel'
+  | 'password-memory'
+  | 'spin-stop'
+  | 'emoji-sort'
+  | 'color-memory'
+  | 'number-memory'
+  | 'finger-race'
+  | 'reaction-color'
 
 export interface Player {
   id: string
@@ -74,6 +84,16 @@ export const GAME_NAMES: Record<GameType, string> = {
   'emoji-decode': '🤔 Emoji Decode',
   'math-chain': '🔗 Math Chain',
   'pattern-copy': '📋 Pattern Copy',
+  'snake': '🐍 Snake',
+  'target-shoot': '🎯 Target Shoot',
+  'rps-duel': '🪨 RPS Duel',
+  'password-memory': '🔐 Password Memory',
+  'spin-stop': '🌀 Spin Stop',
+  'emoji-sort': '🔀 Emoji Sort',
+  'color-memory': '🌈 Color Memory',
+  'number-memory': '🔢 Number Memory',
+  'finger-race': '👆 Finger Race',
+  'reaction-color': '🎨 Reaction Color',
 }
 
 export const GAME_DESCRIPTIONS: Record<GameType, string> = {
@@ -102,6 +122,16 @@ export const GAME_DESCRIPTIONS: Record<GameType, string> = {
   'emoji-decode': 'What word do these emojis represent?',
   'math-chain': 'Solve chained math problems rapidly!',
   'pattern-copy': 'Memorize and recreate the dot pattern!',
+  'snake': 'Eat food, grow longer, avoid hitting yourself!',
+  'target-shoot': 'Click targets before they disappear — smaller = more points!',
+  'rps-duel': 'Beat the CPU at Rock Paper Scissors as many times as you can!',
+  'password-memory': 'Memorize the password, then type it from memory!',
+  'spin-stop': 'Stop the spinning needle inside the green zone!',
+  'emoji-sort': 'Sort emojis into the correct category as fast as possible!',
+  'color-memory': 'Watch the color sequence, then repeat it!',
+  'number-memory': 'Memorize the number sequence, then type it back!',
+  'finger-race': 'Alternate tapping left and right as fast as you can!',
+  'reaction-color': 'Click only when the target color appears!',
 }
 
 // Server → Client
