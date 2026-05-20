@@ -108,11 +108,7 @@ function endRound(room) {
   }
   for (const [id, p] of room.players) {
     if (!room.submissions.has(id)) {
-      const pts = POINTS_TABLE[POINTS_TABLE.length - 1]
-      const cur = room.totalScores.get(id) ?? 0
-      room.totalScores.set(id, cur + pts)
-      p.score = cur + pts
-      roundScores.push({ playerId: id, rawScore: 0, points: pts })
+      roundScores.push({ playerId: id, rawScore: 0, points: 0 })
     }
   }
   broadcast(room, { type: 'round-end', roundScores, players: [...room.players.values()], roundNumber: room.currentRound, totalRounds: TOTAL_ROUNDS })
