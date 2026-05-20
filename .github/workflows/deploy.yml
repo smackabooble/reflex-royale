@@ -13,6 +13,4 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
-      - run: npx partykit deploy
-        env:
-          PARTYKIT_TOKEN: ${{ secrets.PARTYKIT_TOKEN }}
+      - run: npx partykit deploy --token ${{ secrets.PARTYKIT_TOKEN }}
