@@ -100,11 +100,14 @@ export default function App() {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       e.preventDefault()
     }
+    const preventWheel = (e: WheelEvent) => { e.preventDefault() }
     window.addEventListener('keydown', preventKey, { passive: false })
     document.addEventListener('touchmove', preventTouch, { passive: false })
+    document.addEventListener('wheel', preventWheel, { passive: false })
     return () => {
       window.removeEventListener('keydown', preventKey)
       document.removeEventListener('touchmove', preventTouch)
+      document.removeEventListener('wheel', preventWheel)
     }
   }, [])
 
