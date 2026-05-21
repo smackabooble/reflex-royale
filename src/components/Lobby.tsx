@@ -62,11 +62,16 @@ export default function Lobby({ onJoin }: Props) {
   }
 
   return (
+    <>
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
 
       {/* ── Main menu ── */}
-      {!showShop && (
-        <div className="w-full max-w-sm slide-up">
+      <div className="w-full max-w-sm slide-up" style={{
+        transition: 'transform 300ms ease-in-out, opacity 300ms ease-in-out',
+        transform: showShop ? 'translateX(-30px) scale(0.97)' : 'translateX(0) scale(1)',
+        opacity: showShop ? 0 : 1,
+        pointerEvents: showShop ? 'none' : 'auto',
+      }}>
           <div className="text-center mb-10">
             <div className="text-7xl mb-4">⚡</div>
             <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
@@ -150,16 +155,22 @@ export default function Lobby({ onJoin }: Props) {
 
           <p className="text-center text-white/30 text-xs mt-6">Share the room code with friends to play together</p>
         </div>
-      )}
-
-      {/* ── Shop ── */}
-      {showShop && (
-        <div className="w-full max-w-sm slide-in-right bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
-          style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
-          <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
-        </div>
-      )}
-
     </div>
+
+    {/* ── Shop overlay — fixed, slides in from right ── */}
+    <div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4"
+      style={{
+        background: '#0f0f1a',
+        transform: showShop ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 300ms ease-in-out',
+      }}
+    >
+      <div className="w-full max-w-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
+        style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
+        <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
+      </div>
+    </div>
+    </>
   )
 }
