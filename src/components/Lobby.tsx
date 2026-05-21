@@ -62,8 +62,7 @@ export default function Lobby({ onJoin }: Props) {
   }
 
   return (
-    <>
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ overflow: 'hidden' }}>
 
       {/* ── Main menu ── */}
       <div className="w-full max-w-sm slide-up" style={{
@@ -155,22 +154,24 @@ export default function Lobby({ onJoin }: Props) {
 
           <p className="text-center text-white/30 text-xs mt-6">Share the room code with friends to play together</p>
         </div>
-    </div>
 
-    {/* ── Shop overlay — fixed, slides in from right ── */}
-    <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4"
-      style={{
-        background: '#0f0f1a',
+      {/* ── Shop — slides in from right, absolute within overflow:hidden parent ── */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
         transform: showShop ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 300ms ease-in-out',
-      }}
-    >
-      <div className="w-full max-w-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
-        style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
-        <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
+        background: '#0f0f1a',
+      }}>
+        <div className="w-full max-w-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
+          style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
+          <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
+        </div>
       </div>
     </div>
-    </>
   )
 }

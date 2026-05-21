@@ -4,16 +4,19 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body, #root {
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body, #root {
   overflow: hidden !important;
   width: 100%;
   height: 100dvh;
-  max-height: 100dvh;
   overscroll-behavior: none;
 }
 
 body {
-  position: fixed; /* iOS scroll lock */
   background: #0f0f1a;
   color: #fff;
   font-family: 'Inter', system-ui, sans-serif;
