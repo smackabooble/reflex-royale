@@ -49,7 +49,7 @@ export default function Shop({ onClose }: Props) {
     <div className="fixed inset-0 z-[500] bg-[#0f0f1a] flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
-        <h2 className="text-xl font-black">🛍 Shop</h2>
+        <h2 className="text-xl font-black">Shop</h2>
         <div className="flex items-center gap-4">
           <span className="text-yellow-400 font-bold text-lg">🪙 {coins.toLocaleString()}</span>
           <button onClick={onClose}
