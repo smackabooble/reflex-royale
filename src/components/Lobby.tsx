@@ -61,108 +61,115 @@ export default function Lobby({ onJoin }: Props) {
     localStorage.removeItem('playerAvatar')
   }
 
+  const panelBase: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
+    transition: 'transform 300ms ease-in-out',
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 overflow-x-hidden">
-      {/* Slider: 200% wide, translates left to reveal shop */}
-      <div
-        className="flex transition-transform duration-300 ease-in-out"
-        style={{ width: '200%', transform: showShop ? 'translateX(-50%)' : 'translateX(0)' }}
-      >
-        {/* ── Left panel: main menu ── */}
-        <div className="w-1/2 flex justify-center px-4">
-          <div className="w-full max-w-sm slide-up">
-            <div className="text-center mb-10">
-              <div className="text-7xl mb-4">⚡</div>
-              <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                Reflex Royale
-              </h1>
-              <p className="text-white/50 mt-2 text-sm">35 reflex games · real-time multiplayer · free</p>
-              <button onClick={() => setShowShop(true)}
-                className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 font-bold text-sm hover:bg-yellow-400/20 active:scale-95 transition">
-                Shop &nbsp;·&nbsp; 🪙 {coins.toLocaleString()}
-              </button>
+    <div style={{ position: 'relative', width: '100%', height: '100dvh', overflow: 'hidden' }}>
+
+      {/* ── Main menu panel ── */}
+      <div style={{ ...panelBase, transform: showShop ? 'translateX(-100%)' : 'translateX(0)' }}>
+        <div className="w-full max-w-sm slide-up">
+          <div className="text-center mb-10">
+            <div className="text-7xl mb-4">⚡</div>
+            <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+              Reflex Royale
+            </h1>
+            <p className="text-white/50 mt-2 text-sm">35 reflex games · real-time multiplayer · free</p>
+            <button onClick={() => setShowShop(true)}
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 font-bold text-sm hover:bg-yellow-400/20 active:scale-95 transition">
+              Shop &nbsp;·&nbsp; 🪙 {coins.toLocaleString()}
+            </button>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="flex flex-col items-center mb-5">
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickFile} />
+              <div className="relative group cursor-pointer mb-2" onClick={() => fileRef.current?.click()}>
+                <div className={`w-20 h-20 rounded-full flex items-center justify-center overflow-hidden border-2 transition-all
+                  ${avatar ? 'border-yellow-400' : 'border-dashed border-white/20 group-hover:border-yellow-400/60'}`}>
+                  {avatar
+                    ? <img src={avatar} className="w-full h-full object-cover" alt="avatar" />
+                    : <div className="flex flex-col items-center text-white/30 group-hover:text-white/60 transition-colors">
+                        <span className="text-2xl">📷</span>
+                        <span className="text-[10px] mt-0.5">Photo</span>
+                      </div>
+                  }
+                </div>
+                {avatar && (
+                  <button onClick={removeAvatar}
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center hover:bg-red-400">
+                    ×
+                  </button>
+                )}
+              </div>
+              <p className="text-white/25 text-xs">Profile photo (optional)</p>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <div className="flex flex-col items-center mb-5">
-                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickFile} />
-                <div className="relative group cursor-pointer mb-2" onClick={() => fileRef.current?.click()}>
-                  <div className={`w-20 h-20 rounded-full flex items-center justify-center overflow-hidden border-2 transition-all
-                    ${avatar ? 'border-yellow-400' : 'border-dashed border-white/20 group-hover:border-yellow-400/60'}`}>
-                    {avatar
-                      ? <img src={avatar} className="w-full h-full object-cover" alt="avatar" />
-                      : <div className="flex flex-col items-center text-white/30 group-hover:text-white/60 transition-colors">
-                          <span className="text-2xl">📷</span>
-                          <span className="text-[10px] mt-0.5">Photo</span>
-                        </div>
-                    }
-                  </div>
-                  {avatar && (
-                    <button onClick={removeAvatar}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center hover:bg-red-400">
-                      ×
-                    </button>
-                  )}
-                </div>
-                <p className="text-white/25 text-xs">Profile photo (optional)</p>
-              </div>
+            <div className="mb-5">
+              <label className="text-xs text-white/50 uppercase tracking-widest mb-2 block">Your name</label>
+              <input
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-yellow-400 transition font-semibold text-lg"
+                placeholder="John Doe"
+                value={name}
+                onChange={e => { setName(e.target.value); setError(''); localStorage.setItem('playerName', e.target.value) }}
+                maxLength={20}
+                onKeyDown={e => e.key === 'Enter' && tab === 'join' && go(joinCode)}
+              />
+              {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+            </div>
 
-              <div className="mb-5">
-                <label className="text-xs text-white/50 uppercase tracking-widest mb-2 block">Your name</label>
-                <input
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-yellow-400 transition font-semibold text-lg"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={e => { setName(e.target.value); setError(''); localStorage.setItem('playerName', e.target.value) }}
-                  maxLength={20}
-                  onKeyDown={e => e.key === 'Enter' && tab === 'join' && go(joinCode)}
-                />
-                {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
-              </div>
-
-              <div className="flex gap-2 mb-5">
-                {(['create', 'join'] as const).map(t => (
-                  <button key={t} onClick={() => setTab(t)}
-                    className={`flex-1 py-2 rounded-xl font-bold text-sm transition ${tab === t ? 'bg-yellow-400 text-black' : 'bg-white/10 text-white/60 hover:bg-white/15'}`}>
-                    {t === 'create' ? '✨ Create Room' : '🔗 Join Room'}
-                  </button>
-                ))}
-              </div>
-
-              {tab === 'create' ? (
-                <button onClick={() => go(randomCode())}
-                  className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black font-black text-xl rounded-xl transition active:scale-95">
-                  Create Game Room
+            <div className="flex gap-2 mb-5">
+              {(['create', 'join'] as const).map(t => (
+                <button key={t} onClick={() => setTab(t)}
+                  className={`flex-1 py-2 rounded-xl font-bold text-sm transition ${tab === t ? 'bg-yellow-400 text-black' : 'bg-white/10 text-white/60 hover:bg-white/15'}`}>
+                  {t === 'create' ? '✨ Create Room' : '🔗 Join Room'}
                 </button>
-              ) : (
-                <div className="space-y-3">
-                  <input
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-yellow-400 transition font-mono text-2xl tracking-widest text-center uppercase"
-                    placeholder="ABCD"
-                    value={joinCode}
-                    onChange={e => setJoinCode(e.target.value.toUpperCase().slice(0, 6))}
-                    onKeyDown={e => e.key === 'Enter' && go(joinCode)}
-                    maxLength={6}
-                  />
-                  <button onClick={() => go(joinCode)} disabled={!joinCode.trim()}
-                    className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 disabled:opacity-40 text-black font-black text-xl rounded-xl transition active:scale-95">
-                    Join Room
-                  </button>
-                </div>
-              )}
+              ))}
             </div>
 
-            <p className="text-center text-white/30 text-xs mt-6">Share the room code with friends to play together</p>
+            {tab === 'create' ? (
+              <button onClick={() => go(randomCode())}
+                className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black font-black text-xl rounded-xl transition active:scale-95">
+                Create Game Room
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <input
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-yellow-400 transition font-mono text-2xl tracking-widest text-center uppercase"
+                  placeholder="ABCD"
+                  value={joinCode}
+                  onChange={e => setJoinCode(e.target.value.toUpperCase().slice(0, 6))}
+                  onKeyDown={e => e.key === 'Enter' && go(joinCode)}
+                  maxLength={6}
+                />
+                <button onClick={() => go(joinCode)} disabled={!joinCode.trim()}
+                  className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 disabled:opacity-40 text-black font-black text-xl rounded-xl transition active:scale-95">
+                  Join Room
+                </button>
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* ── Right panel: shop ── */}
-        <div className="w-1/2 flex justify-center px-4">
-          <div className="w-full max-w-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
-            <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
-          </div>
+          <p className="text-center text-white/30 text-xs mt-6">Share the room code with friends to play together</p>
         </div>
       </div>
+
+      {/* ── Shop panel ── */}
+      <div style={{ ...panelBase, transform: showShop ? 'translateX(0)' : 'translateX(100%)' }}>
+        <div className="w-full max-w-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
+          style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
+          <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
+        </div>
+      </div>
+
     </div>
   )
 }
