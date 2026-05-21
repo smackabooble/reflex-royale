@@ -46,7 +46,7 @@ export default function Shop({ onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[500] bg-[#0f0f1a] flex flex-col">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
         <h2 className="text-xl font-black">Shop</h2>
