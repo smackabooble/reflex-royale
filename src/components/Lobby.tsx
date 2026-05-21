@@ -61,29 +61,11 @@ export default function Lobby({ onJoin }: Props) {
     localStorage.removeItem('playerAvatar')
   }
 
-  const panel: React.CSSProperties = {
-    width: '100vw',
-    height: '100dvh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '1rem',
-    flexShrink: 0,
-  }
-
   return (
-    <div style={{ width: '100vw', height: '100dvh', overflow: 'hidden' }}>
-      <div style={{
-        display: 'flex',
-        width: '200vw',
-        height: '100%',
-        transform: showShop ? 'translateX(-100vw)' : 'translateX(0)',
-        transition: 'transform 300ms ease-in-out',
-      }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
 
-      {/* ── Main menu panel ── */}
-      <div style={panel}>
+      {/* ── Main menu ── */}
+      {!showShop && (
         <div className="w-full max-w-sm slide-up">
           <div className="text-center mb-10">
             <div className="text-7xl mb-4">⚡</div>
@@ -168,17 +150,16 @@ export default function Lobby({ onJoin }: Props) {
 
           <p className="text-center text-white/30 text-xs mt-6">Share the room code with friends to play together</p>
         </div>
-      </div>
+      )}
 
-      {/* ── Shop panel ── */}
-      <div style={panel}>
-        <div className="w-full max-w-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
+      {/* ── Shop ── */}
+      {showShop && (
+        <div className="w-full max-w-sm slide-in-right bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
           style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
           <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />
         </div>
-      </div>
+      )}
 
-      </div>
     </div>
   )
 }
