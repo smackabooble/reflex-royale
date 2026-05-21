@@ -73,7 +73,7 @@ export default function Lobby({ onJoin }: Props) {
           <p className="text-white/50 mt-2 text-sm">35 reflex games · real-time multiplayer · free</p>
           <button onClick={() => setShowShop(true)}
             className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 font-bold text-sm hover:bg-yellow-400/20 active:scale-95 transition">
-            🛍 Shop &nbsp;·&nbsp; 🪙 {coins.toLocaleString()}
+            Shop &nbsp;·&nbsp; 🪙 {coins.toLocaleString()}
           </button>
         </div>
 

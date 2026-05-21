@@ -64,7 +64,7 @@ export default function Shop({ onClose }: Props) {
         {(['borders', 'titles', 'emotes'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition ${tab === t ? 'bg-yellow-400 text-black' : 'bg-white/10 text-white/60 hover:bg-white/15'}`}>
-            {t === 'borders' ? '🔵 Borders' : t === 'titles' ? '🏷 Titles' : '💬 Emotes'}
+            {t === 'borders' ? 'Borders' : t === 'titles' ? 'Titles' : 'Emotes'}
           </button>
         ))}
       </div>
