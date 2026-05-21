@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react'
+import { getCoins } from '../utils/coins'
+import Shop from './Shop'
 
 interface Props {
   onJoin: (roomId: string, name: string, avatar: string) => void
@@ -35,6 +37,8 @@ export default function Lobby({ onJoin }: Props) {
   const [joinCode, setJoinCode] = useState('')
   const [tab, setTab] = useState<'create' | 'join'>('create')
   const [error, setError] = useState('')
+  const [showShop, setShowShop] = useState(false)
+  const [coins, setCoins] = useState(getCoins)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const go = (roomId: string) => {
@@ -59,6 +63,7 @@ export default function Lobby({ onJoin }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      {showShop && <Shop onClose={() => { setShowShop(false); setCoins(getCoins()) }} />}
       <div className="w-full max-w-sm slide-up">
         <div className="text-center mb-10">
           <div className="text-7xl mb-4">⚡</div>
@@ -66,6 +71,10 @@ export default function Lobby({ onJoin }: Props) {
             Reflex Royale
           </h1>
           <p className="text-white/50 mt-2 text-sm">35 reflex games · real-time multiplayer · free</p>
+          <button onClick={() => setShowShop(true)}
+            className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 font-bold text-sm hover:bg-yellow-400/20 active:scale-95 transition">
+            🛍 Shop &nbsp;·&nbsp; 🪙 {coins.toLocaleString()}
+          </button>
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">

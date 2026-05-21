@@ -266,7 +266,9 @@ wss.on('connection', (ws, req) => {
       const avatar = typeof msg.avatar === 'string' && msg.avatar.startsWith('data:image') ? msg.avatar : ''
       const cid = typeof msg.clientId === 'string' && msg.clientId.length > 4 ? msg.clientId : connId
       room.clientIds.set(connId, cid)
-      const player = { id: connId, name, score: room.totalScores.get(cid) ?? 0, emoji, isHost: isFirst, avatar }
+      const border = typeof msg.border === 'string' ? msg.border.slice(0, 20) : ''
+      const title = typeof msg.title === 'string' ? msg.title.slice(0, 30) : ''
+      const player = { id: connId, name, score: room.totalScores.get(cid) ?? 0, emoji, isHost: isFirst, avatar, border, title }
       if (isFirst) room.hostId = connId
       room.players.set(connId, player)
       if (!room.totalScores.has(cid)) room.totalScores.set(cid, 0)
@@ -286,6 +288,12 @@ wss.on('connection', (ws, req) => {
       const game = room.gameOrder[room.currentRound - 1]
       if (game === 'hot-potato') return
       if (!room.submissions.has(connId)) { room.submissions.set(connId, msg.score); checkComplete(room) }
+
+    } else if (msg.type === 'emote') {
+      const emoji = typeof msg.emoji === 'string' ? msg.emoji : ''
+      if (emoji && room.players.has(connId)) {
+        broadcast(room, { type: 'player-emote', playerId: connId, emoji })
+      }
 
     } else if (msg.type === 'ping') {
       // keepalive no-op

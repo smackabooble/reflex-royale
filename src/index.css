@@ -62,6 +62,38 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 }
 .slide-up { animation: slide-up 0.4s ease-out; }
 
+/* Avatar borders */
+.ring-gold {
+  box-shadow: 0 0 0 2px #fbbf24, 0 0 8px #fbbf2480;
+}
+.ring-purple-pulse {
+  animation: purple-pulse 1.5s ease-in-out infinite;
+}
+@keyframes purple-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px #a855f7; }
+  50%       { box-shadow: 0 0 0 2px #a855f7, 0 0 12px #a855f7; }
+}
+.ring-rainbow-anim {
+  animation: ring-rainbow 2s linear infinite;
+}
+@keyframes ring-rainbow {
+  0%   { box-shadow: 0 0 0 2px #ff6b6b; }
+  16%  { box-shadow: 0 0 0 2px #ffa500; }
+  33%  { box-shadow: 0 0 0 2px #ffe100; }
+  50%  { box-shadow: 0 0 0 2px #00c700; }
+  66%  { box-shadow: 0 0 0 2px #0080ff; }
+  83%  { box-shadow: 0 0 0 2px #8000ff; }
+  100% { box-shadow: 0 0 0 2px #ff6b6b; }
+}
+
+/* Coin earn pop */
+@keyframes coin-pop {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.8); }
+  40%  { opacity: 1; transform: translateY(-6px) scale(1.15); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.coin-pop { animation: coin-pop 0.5s ease-out forwards; }
+
 @keyframes countPop {
   0% { transform: scale(1.5); opacity: 0.4; }
   100% { transform: scale(1); opacity: 1; }

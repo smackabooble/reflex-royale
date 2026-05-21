@@ -1,7 +1,9 @@
-import { Component, useState, useEffect } from 'react'
+import { Component, useState, useEffect, useRef } from 'react'
 import type { RoomState } from '../App'
 import type { GameType } from '../types'
 import { GAME_NAMES, GAME_DESCRIPTIONS } from '../types'
+import { getEquippedEmotes, getEmoteEmoji } from '../utils/coins'
+import PlayerAvatar from './PlayerAvatar'
 import WaitingRoom from './WaitingRoom'
 import RoundResults from './RoundResults'
 import Leaderboard from './Leaderboard'
@@ -112,13 +114,6 @@ class GameErrorBoundary extends Component<{ onError: () => void; children: React
   }
 }
 
-function PlayerIcon({ p, size = 'sm' }: { p: import('../types').Player, size?: 'sm' | 'md' }) {
-  const cls = size === 'sm' ? 'w-6 h-6 text-sm' : 'w-8 h-8 text-xl'
-  return p.avatar
-    ? <img src={p.avatar} className={`${cls} rounded-full object-cover flex-shrink-0`} alt="" />
-    : <span className={size === 'sm' ? 'text-base' : 'text-xl'}>{p.emoji}</span>
-}
-
 function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomState['players'], myId: string, roundNumber: number, totalRounds: number }) {
   const sorted = [...players].sort((a,b) => b.score - a.score)
   return (
@@ -127,7 +122,7 @@ function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomSt
         <span className="text-white/40 text-xs shrink-0">{roundNumber}/{totalRounds}</span>
         {sorted.map(p => (
           <div key={p.id} className={`flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-lg ${p.id === myId ? 'bg-yellow-400/20' : ''}`}>
-            <PlayerIcon p={p} size="sm" />
+            <PlayerAvatar p={p} size="sm" />
             <span className={`font-bold text-sm ${p.id === myId ? 'text-yellow-400' : 'text-white/80'}`}>{p.score}</span>
           </div>
         ))}
@@ -166,8 +161,25 @@ function CountdownScreen({ game, roundNumber, totalRounds }: { game: GameType, r
   )
 }
 
+interface FloatingEmote { uid: number; playerId: string; emoji: string; playerName: string }
+
 export default function GameRoom({ myId, roomId, state, onSend }: Props) {
   const isHost = state.hostId === myId
+  const [floatingEmotes, setFloatingEmotes] = useState<FloatingEmote[]>([])
+  const uidRef = useRef(0)
+  const myEmotes = getEquippedEmotes()
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const d = (e as CustomEvent).detail as { playerId: string; emoji: string }
+      const p = state.players.find(pl => pl.id === d.playerId)
+      const uid = ++uidRef.current
+      setFloatingEmotes(prev => [...prev, { uid, playerId: d.playerId, emoji: d.emoji, playerName: p?.name ?? '' }])
+      setTimeout(() => setFloatingEmotes(prev => prev.filter(x => x.uid !== uid)), 2200)
+    }
+    window.addEventListener('player-emote', handler)
+    return () => window.removeEventListener('player-emote', handler)
+  }, [state.players])
 
   const handleComplete = (score: number) => {
     onSend({ type: 'submit', score })
@@ -196,6 +208,30 @@ export default function GameRoom({ myId, roomId, state, onSend }: Props) {
     return (
       <div className="pt-12">
         <ScoreBar players={state.players} myId={myId} roundNumber={state.roundNumber} totalRounds={state.totalRounds} />
+
+        {/* Floating emote toasts */}
+        <div className="fixed top-14 left-0 right-0 z-40 pointer-events-none flex flex-col items-center gap-2 px-4">
+          {floatingEmotes.map(fe => (
+            <div key={fe.uid} className="slide-up bg-black/70 backdrop-blur-sm rounded-2xl px-4 py-2 flex items-center gap-2">
+              <span className="text-xs text-white/60 font-bold">{fe.playerName}</span>
+              <span className="text-2xl">{fe.emoji}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Emote buttons — fixed bottom-right */}
+        {myEmotes.length > 0 && (
+          <div className="fixed bottom-4 right-3 z-40 flex flex-col gap-2">
+            {myEmotes.map(id => (
+              <button key={id}
+                className="w-11 h-11 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-xl flex items-center justify-center active:scale-90 transition-transform"
+                onPointerDown={() => onSend({ type: 'emote', emoji: getEmoteEmoji(id) })}>
+                {getEmoteEmoji(id)}
+              </button>
+            ))}
+          </div>
+        )}
+
         <GameErrorBoundary onError={() => handleComplete(0)}>
           <GameComponent
             config={state.gameConfig}
@@ -216,6 +252,7 @@ export default function GameRoom({ myId, roomId, state, onSend }: Props) {
         players={state.players}
         roundNumber={state.roundNumber}
         totalRounds={state.totalRounds}
+        myId={myId}
       />
     )
   }

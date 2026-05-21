@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Player, Phase, GameType, ServerMessage, RoundScore } from './types'
+import { getEquipped, getEquippedEmotes } from './utils/coins'
 import Lobby from './components/Lobby'
 import GameRoom from './components/GameRoom'
 
@@ -54,7 +55,12 @@ export default function App() {
     socket.addEventListener('open', () => {
       rejoiningRef.current = false
       setReconnecting(false)
-      socket.send(JSON.stringify({ type: 'join', name, avatar, clientId }))
+      socket.send(JSON.stringify({
+        type: 'join', name, avatar, clientId,
+        border: getEquipped('border'),
+        title: getEquipped('title'),
+        emotes: getEquippedEmotes(),
+      }))
       // Keepalive ping every 25s — Render free tier kills idle WS after ~55s
       pingRef.current = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {
@@ -91,6 +97,9 @@ export default function App() {
           break
         case 'player-move':
           window.dispatchEvent(new CustomEvent('move', { detail: msg }))
+          break
+        case 'player-emote':
+          window.dispatchEvent(new CustomEvent('player-emote', { detail: msg }))
           break
       }
     })

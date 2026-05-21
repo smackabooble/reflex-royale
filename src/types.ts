@@ -42,6 +42,8 @@ export interface Player {
   emoji: string
   isHost: boolean
   avatar?: string
+  border?: string
+  title?: string
 }
 
 export type Phase =
@@ -144,6 +146,7 @@ export type ServerMessage =
   | { type: 'hot-potato-update'; holderId: string }
   | { type: 'hot-potato-explode'; loserId: string; players: Player[]; bombsLeft: number }
   | { type: 'player-move'; playerId: string; x: number; y: number }
+  | { type: 'player-emote'; playerId: string; emoji: string }
   | { type: 'error'; message: string }
 
 // Client → Server
