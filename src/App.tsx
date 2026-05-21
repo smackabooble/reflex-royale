@@ -47,10 +47,14 @@ export default function App() {
     const socket = new WebSocket(`${WS_HOST}?room=${room}`)
     socketRef.current = socket
 
+    // Persistent ID so score survives reconnects
+    let clientId = localStorage.getItem('clientId')
+    if (!clientId) { clientId = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2); localStorage.setItem('clientId', clientId) }
+
     socket.addEventListener('open', () => {
       rejoiningRef.current = false
       setReconnecting(false)
-      socket.send(JSON.stringify({ type: 'join', name, avatar }))
+      socket.send(JSON.stringify({ type: 'join', name, avatar, clientId }))
       // Keepalive ping every 25s — Render free tier kills idle WS after ~55s
       pingRef.current = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {

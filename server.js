@@ -12,7 +12,7 @@ const PLAYER_EMOJIS = ['🦊','🐯','🦁','🐼','🐨','🦋','🐙','🦄','
 const ALL_GAMES = ['whack-mole','dont-click-red','pure-reaction','simon-says','stroop-effect','odd-one-out','number-rush','memory-grid','hot-potato','math-sprint','the-wire','fastest-typist','dodge','balloon-pop','sheep-counter','coin-rush','word-scramble','falling-catch','speed-trivia','color-tap','tile-flip','rapid-tap','emoji-decode','math-chain','pattern-copy','snake','target-shoot','rps-duel','password-memory','spin-stop','emoji-sort','color-memory','number-memory','finger-race','reaction-color']
 const POINTS_TABLE = [500,300,150,100,75,50,25,10,10,10]
 const TOTAL_ROUNDS = 10
-const ROUND_TIMEOUT_MS = 35000
+const ROUND_TIMEOUT_MS = 45000
 
 const rooms = new Map()
 
@@ -132,6 +132,7 @@ function getRoom(roomId) {
       gameOrder: [],
       submissions: new Map(),
       totalScores: new Map(),
+      clientIds: new Map(),
       roundTimeout: null,
       hotPotato: null,
       sockets: new Map(),
@@ -169,9 +170,10 @@ function endRound(room) {
   const roundScores = []
   for (let i = 0; i < sorted.length; i++) {
     const [id, raw] = sorted[i]
-    const pts = raw > 0 ? POINTS_TABLE[Math.min(i, POINTS_TABLE.length - 1)] : 0
-    const cur = room.totalScores.get(id) ?? 0
-    room.totalScores.set(id, cur + pts)
+    const cid = room.clientIds.get(id) || id
+    const pts = POINTS_TABLE[Math.min(i, POINTS_TABLE.length - 1)]
+    const cur = room.totalScores.get(cid) ?? 0
+    room.totalScores.set(cid, cur + pts)
     const p = room.players.get(id)
     if (p) p.score = cur + pts
     roundScores.push({ playerId: id, rawScore: raw, points: pts })
@@ -262,10 +264,12 @@ wss.on('connection', (ws, req) => {
       const isFirst = room.players.size === 0
       const emoji = PLAYER_EMOJIS[room.players.size % PLAYER_EMOJIS.length]
       const avatar = typeof msg.avatar === 'string' && msg.avatar.startsWith('data:image') ? msg.avatar : ''
-      const player = { id: connId, name, score: room.totalScores.get(connId) ?? 0, emoji, isHost: isFirst, avatar }
+      const cid = typeof msg.clientId === 'string' && msg.clientId.length > 4 ? msg.clientId : connId
+      room.clientIds.set(connId, cid)
+      const player = { id: connId, name, score: room.totalScores.get(cid) ?? 0, emoji, isHost: isFirst, avatar }
       if (isFirst) room.hostId = connId
       room.players.set(connId, player)
-      if (!room.totalScores.has(connId)) room.totalScores.set(connId, 0)
+      if (!room.totalScores.has(cid)) room.totalScores.set(cid, 0)
       broadcastState(room)
 
     } else if (msg.type === 'start') {
@@ -274,7 +278,7 @@ wss.on('connection', (ws, req) => {
       const shuffled = [...ALL_GAMES].sort(() => Math.random() - 0.5)
       room.gameOrder = shuffled.slice(0, TOTAL_ROUNDS)
       room.currentRound = 0
-      for (const [id, p] of room.players) { room.totalScores.set(id, 0); p.score = 0 }
+      for (const [id, p] of room.players) { room.totalScores.set(room.clientIds.get(id) || id, 0); p.score = 0 }
       nextRound(room)
 
     } else if (msg.type === 'submit') {
