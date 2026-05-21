@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component, useState, useEffect } from 'react'
 import type { RoomState } from '../App'
 import type { GameType } from '../types'
 import { GAME_NAMES, GAME_DESCRIPTIONS } from '../types'
@@ -136,6 +136,36 @@ function ScoreBar({ players, myId, roundNumber, totalRounds }: { players: RoomSt
   )
 }
 
+function CountdownScreen({ game, roundNumber, totalRounds }: { game: GameType, roundNumber: number, totalRounds: number }) {
+  const [count, setCount] = useState(3)
+
+  useEffect(() => {
+    setCount(3)
+    const t1 = setTimeout(() => setCount(2), 800)
+    const t2 = setTimeout(() => setCount(1), 1600)
+    const t3 = setTimeout(() => setCount(0), 2400)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+  }, [game])
+
+  const isGo = count === 0
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center select-none">
+      <div className="slide-up w-full max-w-xs">
+        <p className="text-white/40 text-xs mb-6 uppercase tracking-widest">Round {roundNumber} of {totalRounds}</p>
+        <div className="text-5xl mb-2">{GAME_NAMES[game].split(' ')[0]}</div>
+        <h2 className="text-3xl font-black mb-2">{GAME_NAMES[game].slice(3)}</h2>
+        <p className="text-white/50 text-base mb-10 max-w-xs mx-auto">{GAME_DESCRIPTIONS[game]}</p>
+
+        <div key={count} className={`text-9xl font-black transition-all duration-150 ${isGo ? 'text-green-400 scale-125' : 'text-white scale-100'}`}
+          style={{ animation: 'countPop 0.25s ease-out' }}>
+          {isGo ? 'GO!' : count}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function GameRoom({ myId, roomId, state, onSend }: Props) {
   const isHost = state.hostId === myId
 
@@ -158,17 +188,7 @@ export default function GameRoom({ myId, roomId, state, onSend }: Props) {
   }
 
   if (state.phase === 'countdown' && state.currentGame) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
-        <div className="slide-up">
-          <p className="text-white/40 text-sm mb-4 uppercase tracking-widest">Round {state.roundNumber} of {state.totalRounds}</p>
-          <div className="text-6xl mb-4">{GAME_NAMES[state.currentGame].split(' ')[0]}</div>
-          <h2 className="text-4xl font-black mb-3">{GAME_NAMES[state.currentGame].slice(3)}</h2>
-          <p className="text-white/60 text-lg mb-8 max-w-xs mx-auto">{GAME_DESCRIPTIONS[state.currentGame]}</p>
-          <div className="text-white/30 text-sm animate-pulse">Get ready…</div>
-        </div>
-      </div>
-    )
+    return <CountdownScreen game={state.currentGame} roundNumber={state.roundNumber} totalRounds={state.totalRounds} />
   }
 
   if (state.phase === 'playing' && state.currentGame) {

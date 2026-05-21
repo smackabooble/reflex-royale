@@ -241,7 +241,7 @@ function nextRound(room) {
     } else {
       room.roundTimeout = setTimeout(() => endRound(room), ROUND_TIMEOUT_MS)
     }
-  }, 3500)
+  }, 3800)
 }
 
 wss.on('connection', (ws, req) => {
