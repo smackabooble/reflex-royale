@@ -283,6 +283,9 @@ wss.on('connection', (ws, req) => {
       if (game === 'hot-potato') return
       if (!room.submissions.has(connId)) { room.submissions.set(connId, msg.score); checkComplete(room) }
 
+    } else if (msg.type === 'ping') {
+      // keepalive no-op
+
     } else if (msg.type === 'move') {
       broadcast(room, { type: 'player-move', playerId: connId, x: msg.x, y: msg.y })
 

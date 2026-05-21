@@ -30,24 +30,33 @@ export default function App() {
   const [myId, setMyId] = useState('')
   const [roomId, setRoomId] = useState('')
   const [state, setState] = useState<RoomState>(INITIAL_STATE)
-  const socketRef = useRef<PartySocket | null>(null)
+  const [reconnecting, setReconnecting] = useState(false)
+  const socketRef = useRef<WebSocket | null>(null)
+  const pingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const rejoiningRef = useRef(false)
+  const savedRoom = useRef('')
+  const savedName = useRef('')
+  const savedAvatar = useRef('')
 
   const sendMessage = useCallback((msg: object) => {
     socketRef.current?.send(JSON.stringify(msg))
   }, [])
 
-  const handleJoin = useCallback((room: string, name: string, avatar: string) => {
+  const connect = useCallback((room: string, name: string, avatar: string) => {
     const WS_HOST = import.meta.env.VITE_WS_URL ?? 'ws://localhost:3001'
-    const connId = Math.random().toString(36).slice(2)
     const socket = new WebSocket(`${WS_HOST}?room=${room}`)
-    ;(socket as any).id = connId
-    socketRef.current = socket as any
-    setRoomId(room)
-    setMyId(connId)
-    setScreen('room')
+    socketRef.current = socket
 
     socket.addEventListener('open', () => {
+      rejoiningRef.current = false
+      setReconnecting(false)
       socket.send(JSON.stringify({ type: 'join', name, avatar }))
+      // Keepalive ping every 25s — Render free tier kills idle WS after ~55s
+      pingRef.current = setInterval(() => {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ type: 'ping' }))
+        }
+      }, 25000)
     })
 
     socket.addEventListener('message', (ev) => {
@@ -83,11 +92,31 @@ export default function App() {
     })
 
     socket.addEventListener('close', () => {
-      setState(prev => ({ ...prev, phase: 'waiting' }))
+      if (pingRef.current) { clearInterval(pingRef.current); pingRef.current = null }
+      if (rejoiningRef.current) return
+      rejoiningRef.current = true
+      setReconnecting(true)
+      // Auto-reconnect after 2s — preserves room state visually while reconnecting
+      setTimeout(() => {
+        connect(savedRoom.current, savedName.current, savedAvatar.current)
+      }, 2000)
     })
   }, []) // eslint-disable-line
 
-  useEffect(() => () => { socketRef.current?.close() }, [])
+  const handleJoin = useCallback((room: string, name: string, avatar: string) => {
+    savedRoom.current = room
+    savedName.current = name
+    savedAvatar.current = avatar
+    setRoomId(room)
+    setScreen('room')
+    connect(room, name, avatar)
+  }, [connect])
+
+  useEffect(() => () => {
+    rejoiningRef.current = true // prevent auto-reconnect on intentional unmount
+    socketRef.current?.close()
+    if (pingRef.current) clearInterval(pingRef.current)
+  }, [])
 
   useEffect(() => {
     const preventKey = (e: KeyboardEvent) => {
@@ -116,11 +145,20 @@ export default function App() {
   }
 
   return (
-    <GameRoom
-      myId={myId}
-      roomId={roomId}
-      state={state}
-      onSend={sendMessage}
-    />
+    <>
+      {reconnecting && (
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+          <div className="text-4xl animate-spin">⚡</div>
+          <p className="text-white font-bold text-lg">Reconnecting…</p>
+          <p className="text-white/40 text-sm">Connection dropped, rejoining room</p>
+        </div>
+      )}
+      <GameRoom
+        myId={myId}
+        roomId={roomId}
+        state={state}
+        onSend={sendMessage}
+      />
+    </>
   )
 }

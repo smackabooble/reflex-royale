@@ -1,3 +1,4 @@
+import { Component } from 'react'
 import type { RoomState } from '../App'
 import type { GameType } from '../types'
 import { GAME_NAMES, GAME_DESCRIPTIONS } from '../types'
@@ -93,6 +94,24 @@ const GAMES: Record<GameType, React.ComponentType<any>> = {
   'reaction-color': ReactionColor,
 }
 
+class GameErrorBoundary extends Component<{ onError: () => void; children: React.ReactNode }, { crashed: boolean }> {
+  state = { crashed: false }
+  static getDerivedStateFromError() { return { crashed: true } }
+  componentDidCatch() { this.props.onError() }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center p-8">
+          <div className="text-6xl">💥</div>
+          <p className="text-white font-bold text-xl">Game crashed!</p>
+          <p className="text-white/40 text-sm">Score submitted as 0. Next round starting…</p>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 function PlayerIcon({ p, size = 'sm' }: { p: import('../types').Player, size?: 'sm' | 'md' }) {
   const cls = size === 'sm' ? 'w-6 h-6 text-sm' : 'w-8 h-8 text-xl'
   return p.avatar
@@ -157,13 +176,15 @@ export default function GameRoom({ myId, roomId, state, onSend }: Props) {
     return (
       <div className="pt-12">
         <ScoreBar players={state.players} myId={myId} roundNumber={state.roundNumber} totalRounds={state.totalRounds} />
-        <GameComponent
-          config={state.gameConfig}
-          onComplete={handleComplete}
-          myId={myId}
-          players={state.players}
-          onSend={onSend}
-        />
+        <GameErrorBoundary onError={() => handleComplete(0)}>
+          <GameComponent
+            config={state.gameConfig}
+            onComplete={handleComplete}
+            myId={myId}
+            players={state.players}
+            onSend={onSend}
+          />
+        </GameErrorBoundary>
       </div>
     )
   }
